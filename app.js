@@ -93,21 +93,31 @@ class Stricker extends Disk
                 this.x =400-(this.size/2);
                 disable = false;
             }
+            //left boundary
+            if(mouseX<=(this.size)/2)
+            {
+                this.x = (this.size)/2;
+            }
         }
         if(mouseX<400)
         {
             disable = true;
         }
+
+        //Top Boundary
+        if(this.y<(this.size)/2)
+        {
+            this.y = (this.size)/2;
+        }
+
+        //Bottom Boundary
+        if(this.y>(400-(this.size)/2))
+        {
+            this.y = 400-((this.size)/2);
+        }
       
     }
-    snapToLine()
-    {
-        if(this.x==holeArray[3].x)
-        {
-            this.x = x;
-        }
-    }
-
+    
 
 }
 
@@ -190,7 +200,7 @@ class DebugPanel
         textFont(fontname);
         textSize(fontsize);
         text("Stricker-X: "+strickerDisk.x, 420, 100);
-        text("stricker-Y: "+strickerDisk.y, 420, 120);
+        text("Stricker-Y: "+strickerDisk.y, 420, 120);
     }
 }
 
