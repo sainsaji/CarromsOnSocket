@@ -10,6 +10,7 @@ const framerate = 60;
 let holeArray = [];
 let lineArray = [];
 let dPanelArray = [];
+let puckArray =[];
 
 //Mouse Config
 let mouseVelocity;
@@ -17,6 +18,9 @@ let mouseVelocity;
 //Player Change
 let midPointArray = [75,(400-75)];
 let pos =0;
+
+//strickerpos
+
 
 class Line
 {
@@ -51,6 +55,16 @@ class Disk
     }
 }
 
+class Pucks extends Disk
+{
+    constructor(x,y,size,color)
+    {
+        super(x,y,size,color);
+    }
+}
+
+let disable = true;
+
 class Stricker extends Disk
 {
     constructor(x,y,size,color)
@@ -58,15 +72,33 @@ class Stricker extends Disk
         super(x,y,size,color); 
     }
 
-    moveAlongMouse()
+    getCurrentXPos()
     {
-      this.x = mouseX;
-      this.y = mouseY;
+        return this.x;
     }
 
-    snapToLine()
+    getCurrentYPos()
     {
-        
+        return this.y;
+    }
+
+    moveAlongMouse()
+    {
+        if(disable)
+        {
+            this.x = mouseX;
+            this.y = mouseY;
+            if(mouseX>=400)
+            {
+                this.x =400-(this.size/2);
+                disable = false;
+            }
+        }
+        if(mouseX<400)
+        {
+            disable = true;
+        }
+      
     }
     snapToLine()
     {
@@ -152,6 +184,14 @@ class DebugPanel
         this.prevX = this.x;
         this.prevY = this.y;
     }
+
+    displayStrickerPos(fontsize,fontname)
+    {
+        textFont(fontname);
+        textSize(fontsize);
+        text("Stricker-X: "+strickerDisk.x, 420, 100);
+        text("stricker-Y: "+strickerDisk.y, 420, 120);
+    }
 }
 
 
@@ -202,8 +242,7 @@ function displayLines()
 
 //Switch Player Action
 function onSwitchButtonClicked()
-{
-    
+{   
     strickerDisk.x = midPointArray[pos];
     console.log(pos);
     pos++;
@@ -211,10 +250,23 @@ function onSwitchButtonClicked()
     {
         pos=0;
     }
-    
-    
 }
 
+//Create Pucks
+
+function createPucks()
+{
+    puckArray.push(new Pucks(400/2,400/2,13,color('green')));
+}
+
+function displayPucks()
+{
+    for(let i = 0;i<puckArray.length;i++)
+    {
+        let puck = puckArray[i];
+        puck.display();
+    }
+}
 let switchPlayer;
 function setup() 
     {
@@ -225,6 +277,7 @@ function setup()
     strickerDisk = new Stricker(400/2,400/2,20,white);
     createHoles(offset = 10);
     createLines(leftOffset = 75);
+    createPucks();
     dPanelArray.push(new DebugPanel());
     //switch player button
     switchPlayer = createButton('Switch Player');
@@ -240,10 +293,12 @@ function setup()
     background(220);
     displayLines();
     strickerDisk.display();
-    //strickerDisk.moveAlongMouse();
+    strickerDisk.moveAlongMouse();
     displayHoles();
+    displayPucks(); 
     dPanelArray[0].displayTitle(fontsize=20,fontname='Helvetica');
     dPanelArray[0].displayMousePos(fontsize=10,fontname='Helvetica');
     dPanelArray[0].displayFPS(fontsize=15);
     dPanelArray[0].displayMouseVelocity(fontsize=10,fontname='Helvetica');
+    dPanelArray[0].displayStrickerPos(fontsize=10,fontname = 'Helvetica');  
   }
