@@ -164,6 +164,6 @@ function setup()
     strickerDisk.display();
     //strickerDisk.moveAlongMouse();
     displayHoles();
-    dPanel.displayTitle();
-    dPanel.displayMousePos();
+    dPanelArray[0].displayTitle();
+    dPanelArray[0].displayMousePos();
   }
