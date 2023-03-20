@@ -89,17 +89,42 @@ class DebugPanel
 
     }
 
-    displayTitle()
+    displayTitle(fontsize,fontname)
     {
-        textFont('Helvetica');
-        text('Debug Panel', 600, 15);
+        textSize(fontsize);
+        textFont(fontname);
+        text('Debug Panel', 550, 15);        
     }
 
-    displayMousePos()
+    displayMousePos(fontsize,fontname)
     {
-        textFont('Helvetica');
-        text("Mouse-X: "+mouseX, 420, 40);
-        text("Mouse-Y: "+mouseY, 420, 60);
+        textFont(fontname);
+        textSize(fontsize);
+        if((mouseX>=0 && mouseX<=400)&&(mouseY>=0 && mouseY<=400))
+        {
+            text("Mouse-X: "+mouseX, 420, 40);
+            text("Mouse-Y: "+mouseY, 420, 60);
+        }
+        else
+        {
+            text("Mouse-X: NA",420, 40);
+            text("Mouse-Y: NA",420, 60);
+        }
+        
+    }
+
+    squareMidPoint(cordinate,length)
+    {
+        return cordinate+(length/2);
+    }
+
+    displayFPS(fontsize,fontname)
+    {
+        fill(color('green'));
+        textSize(fontsize);
+        text(parseInt(frameRate()),this.squareMidPoint(750,25)-8, this.squareMidPoint(30,25)+4);
+        noFill();
+        square(750, 30, 25);
     }
 }
 
@@ -164,6 +189,7 @@ function setup()
     strickerDisk.display();
     //strickerDisk.moveAlongMouse();
     displayHoles();
-    dPanelArray[0].displayTitle();
-    dPanelArray[0].displayMousePos();
+    dPanelArray[0].displayTitle(fontsize=20,fontname='Helvetica');
+    dPanelArray[0].displayMousePos(fontsize=10,fontname='Helvetica');
+    dPanelArray[0].displayFPS(fontsize=15);
   }
