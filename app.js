@@ -11,6 +11,13 @@ let holeArray = [];
 let lineArray = [];
 let dPanelArray = [];
 
+//Mouse Config
+let mouseVelocity;
+
+//Player Change
+let midPointArray = [75,(400-75)];
+let pos =0;
+
 class Line
 {
     constructor(x1,y1,x2,y2,color)
@@ -57,7 +64,7 @@ class Stricker extends Disk
       this.y = mouseY;
     }
 
-    snapToMouseClick()
+    snapToLine()
     {
         
     }
@@ -84,6 +91,11 @@ class Holes extends Disk
 
 class DebugPanel
 {
+    x = 0;
+    y = 0;
+    prevX = 0;
+    prevY = 0;
+    velocity = 0;
     constructor()
     {
 
@@ -126,6 +138,20 @@ class DebugPanel
         noFill();
         square(750, 30, 25);
     }
+
+    displayMouseVelocity(fontsize,fontname)
+    {
+        this.x = mouseX;
+        this.y = mouseY;
+        this.velocity = round((dist(this.x,this.y,this.prevX,this.prevY)/deltaTime)*1000);
+        mouseVelocity = this.velocity;
+        fill(color('black'));
+        textSize(fontsize);
+        textFont(fontname);
+        text("Mouse-V: "+this.velocity, 420, 80);
+        this.prevX = this.x;
+        this.prevY = this.y;
+    }
 }
 
 
@@ -151,10 +177,15 @@ function displayHoles()
 function createLines(leftOffset)
 {
     let white = color('white');
+    //Top
     lineArray.push(new Line(leftOffset,leftOffset,400-leftOffset,leftOffset,white));
+    //Bottom
     lineArray.push(new Line(leftOffset,400-leftOffset,400-leftOffset,400-leftOffset,white));
+    //Left
     lineArray.push(new Line(leftOffset,leftOffset,leftOffset,400-leftOffset,white));
+    //Right
     lineArray.push(new Line(400-leftOffset,leftOffset,400-leftOffset,400-leftOffset,white));
+    //boundary
     lineArray.push(new Line(400,0,400,400,white));
 }
 
@@ -169,18 +200,40 @@ function displayLines()
 
 
 
+//Switch Player Action
+function onSwitchButtonClicked()
+{
+    
+    strickerDisk.x = midPointArray[pos];
+    console.log(pos);
+    pos++;
+    if(pos>1)
+    {
+        pos=0;
+    }
+    
+    
+}
+
+let switchPlayer;
 function setup() 
     {
     //color config
     let white = color('white');
     createCanvas(800, 400);
     frameRate(frameRate);
-    console.log("Running on"+frameRate()+" fps");
     strickerDisk = new Stricker(400/2,400/2,20,white);
     createHoles(offset = 10);
     createLines(leftOffset = 75);
-    dPanelArray.push(new DebugPanel())
+    dPanelArray.push(new DebugPanel());
+    //switch player button
+    switchPlayer = createButton('Switch Player');
+    switchPlayer.position(710, 80);
+    switchPlayer.mousePressed(onSwitchButtonClicked);
     }
+
+    
+    
   
   function draw() 
   {
@@ -192,4 +245,5 @@ function setup()
     dPanelArray[0].displayTitle(fontsize=20,fontname='Helvetica');
     dPanelArray[0].displayMousePos(fontsize=10,fontname='Helvetica');
     dPanelArray[0].displayFPS(fontsize=15);
+    dPanelArray[0].displayMouseVelocity(fontsize=10,fontname='Helvetica');
   }
