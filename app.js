@@ -94,8 +94,35 @@ class Stricker extends Disk
             disable = true;
         }
     }
-    
+}
 
+let angle = 0;
+class DragAngle
+{
+    constructor(color)
+    {
+        this.color = color;
+    }
+
+    displayDragAngle()
+    {
+        fill(this.color);
+        // Calculate the midpoint of the line
+        let midX = (strickerDisk.x + strickerDisk.x) / 2;
+        let midY = ((strickerDisk.y+20) + (strickerDisk.y-20)) / 2;
+        // Rotate the line around its midpoint
+        push();
+        translate(midX, midY);
+        rotate(angle);
+        line(strickerDisk.x - midX, (strickerDisk.y+20)- midY, strickerDisk.x - midX, (strickerDisk.y-20) - midY);
+        fill(color('purple'));
+        circle(strickerDisk.x - midX, (strickerDisk.y-20) - midY,10);
+        pop();
+        // Increment the angle
+        let customMouseX = constrain(mouseX, 0, 400);
+        
+        angle = map(customMouseX, 0, width/2, PI/2, -PI/2);
+    }
 }
 
 class Holes extends Disk
@@ -162,7 +189,7 @@ class Slider
             {
                 this.x1 = 400-75-20;
             }
-            strickerDisk.x = this.x1;
+            strickerDisk.x = this.x1+10;
 
           
         }
@@ -345,6 +372,7 @@ function setup()
     switchPlayer.mousePressed(onSwitchButtonClicked);
     //Slider Controls
     sliderA = new Slider(75,360,75,360-5,(400-(75*2)),10,color('blue'));
+    dragAngle = new DragAngle(color('green'));
     }
 
     
@@ -365,6 +393,7 @@ function setup()
     dPanelArray[0].displayStrickerPos(fontsize=10,fontname = 'Helvetica');  
     sliderA.displaySlider();
     sliderA.displaySliderSquare();
+    dragAngle.displayDragAngle();
   }
 
   
