@@ -1,6 +1,3 @@
-//Class Imports
-//import {Line} from './line.js';
-
 //config
 const framerate = 60;
 //canvas 
@@ -19,26 +16,10 @@ let mouseVelocity;
 let midPointArray = [75,(400-75)];
 let pos =0;
 
+//slider config
+
+
 //strickerpos
-
-
-class Line
-{
-    constructor(x1,y1,x2,y2,color)
-    {
-        this.x1 = x1;
-        this.y1 = y1;
-        this.x2 = x2,
-        this.y2 = y2;
-        this.color = color;
-    }
-    display()
-    {
-        fill(this.color);
-        line(this.x1,this.y1,this.x2,this.y2);
-    }
-}
-
 class Disk
 {
     constructor(x,y,size,color)
@@ -63,7 +44,7 @@ class Pucks extends Disk
     }
 }
 
-let disable = true;
+let disable = false;
 
 class Stricker extends Disk
 {
@@ -84,38 +65,34 @@ class Stricker extends Disk
 
     moveAlongMouse()
     {
-        if(disable)
+        if(disable==false)
         {
             this.x = mouseX;
             this.y = mouseY;
             if(mouseX>=400)
             {
                 this.x =400-(this.size/2);
-                disable = false;
             }
             //left boundary
             if(mouseX<=(this.size)/2)
             {
                 this.x = (this.size)/2;
             }
-        }
-        if(mouseX<400)
+            //Top Boundary
+            if(this.y<(this.size)/2)
+            {
+                this.y = (this.size)/2;
+            }
+            //Bottom Boundary
+            if(this.y>(400-(this.size)/2))
+            {
+                this.y = 400-((this.size)/2);
+            } 
+        }   
+        if(mouseX>400&&mouseY>400)
         {
             disable = true;
         }
-
-        //Top Boundary
-        if(this.y<(this.size)/2)
-        {
-            this.y = (this.size)/2;
-        }
-
-        //Bottom Boundary
-        if(this.y>(400-(this.size)/2))
-        {
-            this.y = 400-((this.size)/2);
-        }
-      
     }
     
 
@@ -127,8 +104,77 @@ class Holes extends Disk
     {
         super(x,y,28,color(0,0,0)); 
     }
+}
 
+function mapRange(value, a, b, c, d) 
+{
+    return (value - a) * (d - c) / (b - a) + c;
+}
+class Slider 
+{
     
+    constructor(x,y,x1,y1,width,height,color)
+    {
+        this.x = x;
+        this.y = y;
+        this.x1 = x1;
+        this.y1 = y1;
+        this.width = width;
+        this.height = height;
+        this.color = color;
+        this.mouseOffsetX = 0;
+        this.mouseOffsetY = 0;
+        this.squareDragged = false;
+    }
+
+    displaySlider()
+    {
+        fill(this.color)
+        rect(this.x,this.y,this.width,this.height);
+    }
+
+    displaySliderSquare()
+    {
+        fill(color('red'));
+        square(this.x1,this.y1,20);
+    }
+
+    mousePressed() 
+    {
+        if (mouseX >= this.x1 && mouseX <= this.x1 + 20 && mouseY >= this.y1 && mouseY <= this.y1 + 20) 
+        {
+          this.mouseOffsetX = mouseX - this.x1;
+          this.mouseOffsetY = mouseY - this.y1;
+          this.squareDragged = true;
+        }
+      }
+      
+      mouseDragged() 
+      {
+        if (this.squareDragged) 
+        {
+            this.x1 = mouseX - this.mouseOffsetX;
+            if(this.x1<=this.x)
+            {
+                this.x1 = this.x;
+            }
+            if(this.x1>=(400-75-20))
+            {
+                this.x1 = 400-75-20;
+            }
+            strickerDisk.x = this.x1;
+
+          
+        }
+      }
+      
+      mouseReleased() 
+        {
+            if (this.squareDragged) 
+            {
+            this.squareDragged = false;
+            }
+        }
 }
 
 class DebugPanel
@@ -253,7 +299,7 @@ function displayLines()
 //Switch Player Action
 function onSwitchButtonClicked()
 {   
-    strickerDisk.x = midPointArray[pos];
+    strickerDisk.y = midPointArray[pos];
     console.log(pos);
     pos++;
     if(pos>1)
@@ -278,10 +324,14 @@ function displayPucks()
     }
 }
 let switchPlayer;
+
+
+
 function setup() 
     {
     //color config
     let white = color('white');
+    let blue = color('blue');
     createCanvas(800, 400);
     frameRate(frameRate);
     strickerDisk = new Stricker(400/2,400/2,20,white);
@@ -293,6 +343,8 @@ function setup()
     switchPlayer = createButton('Switch Player');
     switchPlayer.position(710, 80);
     switchPlayer.mousePressed(onSwitchButtonClicked);
+    //Slider Controls
+    sliderA = new Slider(75,360,75,360-5,(400-(75*2)),10,color('blue'));
     }
 
     
@@ -303,7 +355,7 @@ function setup()
     background(220);
     displayLines();
     strickerDisk.display();
-    strickerDisk.moveAlongMouse();
+    //strickerDisk.moveAlongMouse();
     displayHoles();
     displayPucks(); 
     dPanelArray[0].displayTitle(fontsize=20,fontname='Helvetica');
@@ -311,4 +363,22 @@ function setup()
     dPanelArray[0].displayFPS(fontsize=15);
     dPanelArray[0].displayMouseVelocity(fontsize=10,fontname='Helvetica');
     dPanelArray[0].displayStrickerPos(fontsize=10,fontname = 'Helvetica');  
+    sliderA.displaySlider();
+    sliderA.displaySliderSquare();
+  }
+
+  
+  function mousePressed()
+  {
+    sliderA.mousePressed();
+  }
+
+  function mouseReleased()
+  {
+    sliderA.mouseReleased();
+  }
+
+  function mouseDragged()
+  {
+    sliderA.mouseDragged();
   }
