@@ -128,6 +128,7 @@ class DragAngle
             let customMouseX = constrain(mouseX, 0, 400);
             
             angle = map(customMouseX, 0, width/2, PI/2, -PI/2);
+            sliderRelease = false;
         }
         if(!angleActivate)
         {
@@ -187,7 +188,7 @@ class Slider
 
     displaySliderSquare()
     {
-        fill(color('red'));
+        fill(color('green'));
         square(this.x1,this.y1,20);
     }
 
@@ -203,7 +204,7 @@ class Slider
         {
             angleActivate = false;
         }
-      }
+    }
       
       mouseDragged() 
       {
@@ -234,6 +235,76 @@ class Slider
         }
 }
 
+class PowerSlider extends Slider
+{
+    constructor(x,y,x1,y1,width,height,color)
+    {
+        super(x,y,x1,y1,width,height,color);
+    }
+    displaySliderSquare()
+    {
+        fill(color('red'));
+        square(this.x1,this.y1,20);
+    }
+    mousePressed() 
+    {
+        if (mouseX >= this.x1 && mouseX <= this.x1 + 20 && mouseY >= this.y1 && mouseY <= this.y1 + 20) 
+        {
+          this.mouseOffsetX = mouseX - this.x1;
+          this.mouseOffsetY = mouseY - this.y1;
+          this.squareDragged = true;
+        }
+    }
+      
+      mouseDragged() 
+      {
+        if (this.squareDragged) 
+        {
+            this.x1 = mouseX - this.mouseOffsetX;
+            if(this.x1<=this.x)
+            {
+                this.x1 = this.x;
+            }
+            if(this.x1>=(400-75-20))
+            {
+                this.x1 = 400-75-20;
+            }
+            //strickerDisk.x = this.x1+10;
+        }
+      }
+      
+      mouseReleased() 
+        {
+            if (this.squareDragged) 
+            {
+            this.squareDragged = false;
+            }
+            
+        }
+}
+class BooleanLights
+{
+
+    green = color('green');
+    constructor(x,y,radius)
+    {
+        this.x = x;
+        this.y = y;
+        this.radius = radius;
+        // this.red = color('red');
+        // this.green = color('green');
+        this.colors ={
+            red: color('red'),
+            green: color('green')
+        }
+    }
+    drawLights(booleanVal)
+    {
+        fill(this.colors[booleanVal? 'green':'red']);
+        circle(this.x,this.y,this.radius);
+    }
+}
+
 class DebugPanel
 {
     x = 0;
@@ -243,7 +314,8 @@ class DebugPanel
     velocity = 0;
     constructor()
     {
-
+        this.b1 = new BooleanLights(500,236,5);
+        this.b2 = new BooleanLights(500,253,5);
     }
 
     displayTitle(fontsize,fontname)
@@ -310,6 +382,17 @@ class DebugPanel
     {
         text("Drag Angle: "+mapRange(angle,-1.57,+1.57,0,180), 420, 140);
         
+    }
+
+    booleanStateDisplay()
+    {
+        noFill();
+        rect(420,220,375,150);  
+        this.b1.drawLights(sliderRelease);
+        this.b2.drawLights(angleActivate);
+        fill(color('black'))
+        text("Slider Release ", 425, 240);
+        text("Angle Activate ", 425, 256);
     }
 }
 
@@ -408,6 +491,7 @@ function setup()
     switchPlayer.mousePressed(onSwitchButtonClicked);
     //Slider Controls
     sliderA = new Slider(75,360,75,360-5,(400-(75*2)),10,color('blue'));
+    sliderB = new PowerSlider(75,380,75,360+15,(400-(75*2)),10,color('purple'));
     dragAngle = new DragAngle(color('green'));
     }
 
@@ -428,8 +512,11 @@ function setup()
     dPanelArray[0].displayMouseVelocity(fontsize=10,fontname='Helvetica');
     dPanelArray[0].displayStrickerPos(fontsize=10,fontname = 'Helvetica');  
     dPanelArray[0].displayDragAngle();  
+    dPanelArray[0].booleanStateDisplay();
     sliderA.displaySlider();
+    sliderB.displaySlider();
     sliderA.displaySliderSquare();
+    sliderB.displaySliderSquare();
     dragAngle.displayDragAngle();
   }
 
@@ -437,6 +524,7 @@ function setup()
   function mousePressed()
   {
     sliderA.mousePressed();
+    sliderB.mousePressed();
     storedAngle = angle;
     console.log(storedAngle);
     angleActivate = false;
@@ -445,9 +533,11 @@ function setup()
   function mouseReleased()
   {
     sliderA.mouseReleased();
+    sliderB.mouseReleased();
   }
 
   function mouseDragged()
   {
     sliderA.mouseDragged();
+    sliderB.mouseDragged();
   }
