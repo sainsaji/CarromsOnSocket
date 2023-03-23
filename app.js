@@ -17,7 +17,11 @@ let midPointArray = [75,(400-75)];
 let pos =0;
 
 //slider config
+var sliderRelease = false;
 
+//drag angle config
+var angleActivate = false;
+var storedAngle;
 
 //strickerpos
 class Disk
@@ -106,22 +110,41 @@ class DragAngle
 
     displayDragAngle()
     {
-        fill(this.color);
-        // Calculate the midpoint of the line
-        let midX = (strickerDisk.x + strickerDisk.x) / 2;
-        let midY = ((strickerDisk.y+20) + (strickerDisk.y-20)) / 2;
-        // Rotate the line around its midpoint
-        push();
-        translate(midX, midY);
-        rotate(angle);
-        line(strickerDisk.x - midX, (strickerDisk.y+20)- midY, strickerDisk.x - midX, (strickerDisk.y-20) - midY);
-        fill(color('purple'));
-        circle(strickerDisk.x - midX, (strickerDisk.y-20) - midY,10);
-        pop();
-        // Increment the angle
-        let customMouseX = constrain(mouseX, 0, 400);
+        if(angleActivate)
+        {
+            fill(this.color);
+            // Calculate the midpoint of the line
+            let midX = (strickerDisk.x + strickerDisk.x) / 2;
+            let midY = ((strickerDisk.y+20) + (strickerDisk.y-20)) / 2;
+            // Rotate the line around its midpoint
+            push();
+            translate(midX, midY);
+            rotate(angle);
+            line(strickerDisk.x - midX, (strickerDisk.y+20)- midY, strickerDisk.x - midX, (strickerDisk.y-20) - midY);
+            fill(color('purple'));
+            circle(strickerDisk.x - midX, (strickerDisk.y-20) - midY,10);
+            pop();
+            // Increment the angle
+            let customMouseX = constrain(mouseX, 0, 400);
+            
+            angle = map(customMouseX, 0, width/2, PI/2, -PI/2);
+        }
+        if(!angleActivate)
+        {
+            fill(this.color);
+            // Calculate the midpoint of the line
+            let midX = (strickerDisk.x + strickerDisk.x) / 2;
+            let midY = ((strickerDisk.y+20) + (strickerDisk.y-20)) / 2;
+            // Rotate the line around its midpoint
+            push();
+            translate(midX, midY);
+            rotate(storedAngle);
+            line(strickerDisk.x - midX, (strickerDisk.y+20)- midY, strickerDisk.x - midX, (strickerDisk.y-20) - midY);
+            fill(color('purple'));
+            circle(strickerDisk.x - midX, (strickerDisk.y-20) - midY,10);
+            pop();
+        }
         
-        angle = map(customMouseX, 0, width/2, PI/2, -PI/2);
     }
 }
 
@@ -137,6 +160,8 @@ function mapRange(value, a, b, c, d)
 {
     return (value - a) * (d - c) / (b - a) + c;
 }
+
+
 class Slider 
 {
     
@@ -174,6 +199,10 @@ class Slider
           this.mouseOffsetY = mouseY - this.y1;
           this.squareDragged = true;
         }
+        if(this.squareDragged)
+        {
+            angleActivate = false;
+        }
       }
       
       mouseDragged() 
@@ -190,8 +219,6 @@ class Slider
                 this.x1 = 400-75-20;
             }
             strickerDisk.x = this.x1+10;
-
-          
         }
       }
       
@@ -200,7 +227,10 @@ class Slider
             if (this.squareDragged) 
             {
             this.squareDragged = false;
+            sliderRelease = true;
+            angleActivate = true;
             }
+            
         }
 }
 
@@ -274,6 +304,12 @@ class DebugPanel
         textSize(fontsize);
         text("Stricker-X: "+strickerDisk.x, 420, 100);
         text("Stricker-Y: "+strickerDisk.y, 420, 120);
+    }
+
+    displayDragAngle()
+    {
+        text("Drag Angle: "+mapRange(angle,-1.57,+1.57,0,180), 420, 140);
+        
     }
 }
 
@@ -350,7 +386,7 @@ function displayPucks()
         puck.display();
     }
 }
-let switchPlayer;
+
 
 
 
@@ -391,6 +427,7 @@ function setup()
     dPanelArray[0].displayFPS(fontsize=15);
     dPanelArray[0].displayMouseVelocity(fontsize=10,fontname='Helvetica');
     dPanelArray[0].displayStrickerPos(fontsize=10,fontname = 'Helvetica');  
+    dPanelArray[0].displayDragAngle();  
     sliderA.displaySlider();
     sliderA.displaySliderSquare();
     dragAngle.displayDragAngle();
@@ -400,6 +437,9 @@ function setup()
   function mousePressed()
   {
     sliderA.mousePressed();
+    storedAngle = angle;
+    console.log(storedAngle);
+    angleActivate = false;
   }
 
   function mouseReleased()
