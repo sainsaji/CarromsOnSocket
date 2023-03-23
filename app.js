@@ -235,11 +235,44 @@ class Slider
         }
 }
 
+class PowerCircle
+{
+    constructor()
+    {
+        this.colors = {
+            green: color('green'),
+            yellow: color('yellow'),
+            red: color('red')
+        }
+    }
+
+    displayPowerCircle()
+    {
+        var powVal = mapRange(sliderB.getPowerVal(),0,100,0,80);
+        noFill();
+        if(powVal>=0&&powVal<=25)
+        {
+            stroke(this.colors.green);
+        }
+        else if(powVal>25&&powVal<=50)
+        {
+            stroke(this.colors.yellow);
+        }
+        else
+        {
+            stroke(this.colors.red);
+        }
+        circle(strickerDisk.x,strickerDisk.y,strickerDisk.size+powVal);
+        stroke('black');
+    }
+}
+
 class PowerSlider extends Slider
 {
     constructor(x,y,x1,y1,width,height,color)
     {
         super(x,y,x1,y1,width,height,color);
+        this.powerval = 0;
     }
     displaySliderSquare()
     {
@@ -268,8 +301,7 @@ class PowerSlider extends Slider
             if(this.x1>=(400-75-20))
             {
                 this.x1 = 400-75-20;
-            }
-            //strickerDisk.x = this.x1+10;
+            } 
         }
       }
       
@@ -281,6 +313,12 @@ class PowerSlider extends Slider
             }
             
         }
+    getPowerVal()
+    {
+        this.powerval = mapRange(this.x1,75,305,0,100);
+        return this.powerval;
+    }
+
 }
 class BooleanLights
 {
@@ -381,9 +419,12 @@ class DebugPanel
     displayDragAngle()
     {
         text("Drag Angle: "+mapRange(angle,-1.57,+1.57,0,180), 420, 140);
-        
     }
 
+    displayPowerVal()
+    {
+        text("Power Value: "+sliderB.getPowerVal(), 420, 160);
+    }
     booleanStateDisplay()
     {
         noFill();
@@ -493,6 +534,7 @@ function setup()
     sliderA = new Slider(75,360,75,360-5,(400-(75*2)),10,color('blue'));
     sliderB = new PowerSlider(75,380,75,360+15,(400-(75*2)),10,color('purple'));
     dragAngle = new DragAngle(color('green'));
+    powerCircle = new PowerCircle();
     }
 
     
@@ -513,11 +555,13 @@ function setup()
     dPanelArray[0].displayStrickerPos(fontsize=10,fontname = 'Helvetica');  
     dPanelArray[0].displayDragAngle();  
     dPanelArray[0].booleanStateDisplay();
+    dPanelArray[0].displayPowerVal();
     sliderA.displaySlider();
     sliderB.displaySlider();
     sliderA.displaySliderSquare();
     sliderB.displaySliderSquare();
     dragAngle.displayDragAngle();
+    powerCircle.displayPowerCircle();
   }
 
   
