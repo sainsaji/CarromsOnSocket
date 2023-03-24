@@ -20,3 +20,7 @@
 **Existing Issues:**
 - Switching players doesn't turn angle guidance
 - No provison to move striker
+- Addition of stroke reduced readability
+
+**Image Update:**
+![Alt Text](./ChangelogFiles/cl1.PNG)
