@@ -1,7 +1,10 @@
-//config
-const framerate = 60;
-//canvas 
+/*
+^ configuration variables
+*/
+const frameRate = 60;
 
+
+//canvas 
 
 //Array Objects
 let holeArray = [];
